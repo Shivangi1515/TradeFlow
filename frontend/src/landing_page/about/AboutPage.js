@@ -1,12 +1,19 @@
 import React from 'react';
 
-function AboutPage() {
+import Hero from './Hero';
+import Team from './Team';
+
+import Navbar from '../Navbar';
+import Footer from '../Footer';
+
+function PricingPage() {
     return ( 
-        <div>
-            <h1>About Us</h1>
-            <p>Welcome to our company!</p>
-        </div>
+        <>
+        <Hero/>
+        <Team/>
+
+        </>
      );
 }
 
-export default AboutPage;
+export default PricingPage;
