@@ -167,3 +167,31 @@ Retrieves transactional logs of completed orders.
     }
   ]
   ```
+
+#### `POST /newOrder`
+Places a new buy or sell order for a stock.
+- **Request Body:**
+  ```json
+  {
+    "name": "RELIANCE",
+    "qty": 5,
+    "price": 2450.00,
+    "mode": "BUY"
+  }
+  ```
+- **Response (201 Created):**
+  ```json
+  {
+    "message": "Order placed successfully",
+    "order": {
+      "_id": "6a495774...",
+      "user": "6a495771...",
+      "name": "RELIANCE",
+      "qty": 5,
+      "price": 2450.00,
+      "mode": "BUY",
+      "date": "2026-07-04T18:55:00.000Z",
+      "__v": 0
+    }
+  }
+  ```
