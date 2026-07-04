@@ -58,3 +58,26 @@ graph TD
 2. Port 3001 sends a PUT request containing the modified preference payload to Port 3002.
 3. Backend updates the user preference document inside MongoDB.
 4. Port 3001 updates the active React states and appends the `.dark-theme` CSS class directly to `document.body` for responsive, global visual updates.
+
+### 3. Portfolio & Trading Data Flows
+1. When the Dashboard mounts, the context providers make GET requests (`/allHoldings`, `/allPositions`, `/allOrders`) to Port 3002.
+2. The Backend intercepts requests via `authenticateToken`, extracting the user's `userId` from the JWT payload.
+3. The Backend queries MongoDB filtering by the `user` reference field and returns the user-specific portfolio.
+4. When a user clicks **Buy** or **Sell** on a stock watchlist item, the component sends a `POST /newOrder` request containing the transaction payload.
+5. The Backend creates a Mongoose document inside the `orders` collection, updates the portfolio records, and returns a 201 status.
+
+### 4. Ecosystem Partner Apps SSO Integration
+1. User navigates to `/apps` and clicks **Connect App** on a card.
+2. A React state modal opens simulating OAuth scopes requests.
+3. Clicking **Authorize** runs a loader for 1.5 seconds, then saves the authorized App ID inside `localStorage` on Port 3001.
+4. The connection state is persisted in localStorage, allowing the card to render as **Connected** on subsequent mounts.
+
+---
+
+## 🔒 Cross-Port Session Interceptors
+
+To maintain secure, seamless communication across separate origins:
+- **Token Decoupling:** The landing site (Port 3000) does not cache the session token in its own `localStorage` to avoid stale credentials desynchronization.
+- **Axios Global Interceptor (`dashboard/src/index.js`):** Intercepts all outgoing XMLHttpRequests, appending the active JWT token inside the `Authorization: Bearer <token>` header.
+- **401 Redirect Interceptor:** If the backend returns a `401 Unauthorized` status (due to token expiration or invalid signature), the interceptor automatically clears the local credentials cache and redirects the browser back to `http://localhost:3000/login`.
+
