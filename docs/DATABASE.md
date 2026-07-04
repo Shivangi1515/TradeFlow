@@ -93,7 +93,7 @@ A transactional log of completed and pending trades placed:
 
 When a user signs up (via email or Google Sign-In) for the first time, a helper function seeds their account in MongoDB to ensure they see a realistic trading portfolio immediately.
 
-**Seeded Data list:**
-*   **Default Holdings:** Seeds shares of Bharti Airtel (`BHARTIARTL`), HDFC Bank (`HDFCBANK`), Reliance Industries (`RELIANCE`), and Wipro (`WIPRO`).
-*   **Default Positions:** Seeds active open trading positions in ONGC, Tata Steel (`TATASTEEL`), and ITC.
-*   **Default Orders:** Populates order histories for bought shares to populate logs.
+**Seeded Data List:**
+*   **Default Holdings:** Seeds 13 primary Indian stock listings: Bharti Airtel (`BHARTIARTL`), HDFC Bank (`HDFCBANK`), Hindustan Unilever (`HINDUNILVR`), Infosys (`INFY`), ITC, KPIT Technologies (`KPITTECH`), Mahindra & Mahindra (`M&M`), Reliance Industries (`RELIANCE`), State Bank of India (`SBIN`), Sovereign Gold Bond (`SGBMAY29`), Tata Power (`TATAPOWER`), TCS, and Wipro (`WIPRO`).
+*   **Default Positions:** Seeds active open trading positions in Eveready (`EVEREADY`) and Domino's (`JUBLFOOD`).
+*   **Default Orders:** Initial historical buy orders for the seeded assets are generated to fill logs.
