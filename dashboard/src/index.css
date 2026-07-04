@@ -842,4 +842,129 @@ hr {
   background-color: rgb(212, 212, 212);
 }
 
+/* --- DARK MODE OVERRIDES & PREFERENCES --- */
+:root {
+  --background-color: #fff;
+  --text-color: #333;
+  --card-bg: #fff;
+  --border-color: #e0e0e0;
+  --input-bg: #fff;
+}
+
+body.dark-theme {
+  --background-color: #121212;
+  --text-color: #f1f1f1;
+  --card-bg: #1e1e1e;
+  --border-color: #333333;
+  --input-bg: #2d2d2d;
+  background-color: #121212 !important;
+  color: #f1f1f1 !important;
+}
+
+body.dark-theme .dashboard-container {
+  background-color: #121212;
+}
+
+body.dark-theme .content {
+  background-color: #121212;
+}
+
+body.dark-theme .menu-container {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+}
+
+body.dark-theme .menu {
+  color: #aaa;
+}
+
+body.dark-theme .menu.selected {
+  color: #ff5722;
+}
+
+body.dark-theme hr {
+  border-left: 0.8px solid #333;
+}
+
+body.dark-theme .title {
+  color: #fff;
+}
+
+body.dark-theme .order-table tr {
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
+
+body.dark-theme .order-table td {
+  color: #ddd;
+}
+
+body.dark-theme .order-table th {
+  color: #888;
+}
+
+body.dark-theme .col h5 {
+  color: #fff;
+}
+
+body.dark-theme .col p {
+  color: #aaa;
+}
+
+body.dark-theme .profile-dropdown {
+  background-color: #1e1e1e !important;
+  border: 1px solid #333 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+}
+
+body.dark-theme .profile-dropdown p {
+  color: #fff !important;
+}
+
+body.dark-theme .profile-dropdown div {
+  border-bottom: 1px solid #333 !important;
+}
+
+body.dark-theme .watchlist-number {
+  background: #1e1e1e !important;
+  border: 1px solid #333 !important;
+}
+
+body.dark-theme .watchlist-number ul li {
+  border-right: 1px solid #333;
+}
+
+body.dark-theme .watchlist-container {
+  background-color: #1e1e1e;
+  border-right: 1px solid #333;
+}
+
+body.dark-theme .watchlist-container .search-container {
+  border-bottom: 1px solid #333;
+  background-color: #1e1e1e;
+}
+
+body.dark-theme .watchlist-container .search {
+  background-color: #2d2d2d;
+  color: #fff;
+  border: 1px solid #333;
+}
+
+body.dark-theme .watchlist-container .list li {
+  border-bottom: 1px solid #333;
+  background-color: #1e1e1e;
+}
+
+body.dark-theme .watchlist-container .list li:hover {
+  background-color: #2d2d2d;
+}
+
+body.dark-theme .watchlist-container .list li .item-name {
+  color: #fff;
+}
+
+body.dark-theme .watchlist-container .list li .price {
+  color: #fff;
+}
+
 
