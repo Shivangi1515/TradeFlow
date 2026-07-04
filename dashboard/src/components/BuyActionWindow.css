@@ -170,6 +170,8 @@
     color: #fff;
     margin-right: 2px;
     margin-left: 2px;
+    border: none;
+    cursor: pointer;
   }
   
   .btn-grey {

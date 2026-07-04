@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
-import axios, { all } from "axios";
+import React, { useContext } from "react";
 import { VerticalGraph } from "./VerticalGraph";
 
 import { holdings } from "../data/data";
+import GeneralContext from "./GeneralContext";
 
 const Holdings = () => {
-  const [allHoldings, setAllHoldings] = useState([]);
-
-  useEffect(() => {
-    axios.get("http://localhost:3002/allHoldings").then((res) => {
-      // console.log(res.data);
-      setAllHoldings(res.data);
-    });
-  }, []);
+  const { allHoldings } = useContext(GeneralContext);
 
   // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   const labels = allHoldings.map((subArray) => subArray["name"]);

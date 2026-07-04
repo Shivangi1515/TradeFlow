@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
 
 import axios from "axios";
 
@@ -10,20 +9,52 @@ import "./BuyActionWindow.css";
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockPrice, setStockPrice] = useState(0.0);
+  const generalContext = useContext(GeneralContext);
 
   const handleBuyClick = () => {
     axios.post("http://localhost:3002/newOrder", {
       name: uid,
-      qty: stockQuantity,
-      price: stockPrice,
+      qty: Number(stockQuantity),
+      price: Number(stockPrice),
       mode: "BUY",
+    }).then(() => {
+      generalContext.fetchHoldings();
+      generalContext.showSuccessToast(`Bought ${stockQuantity} shares of ${uid} at ₹${stockPrice}`, "Order Placed Successfully");
+    }).catch((err) => {
+      console.error("Error placing buy order:", err);
+      alert("Failed to place buy order. Please try again.");
     });
 
-    GeneralContext.closeBuyWindow();
+    generalContext.closeBuyWindow();
+  };
+
+  const handleSellClick = () => {
+    const holding = generalContext.allHoldings.find((h) => h.name === uid);
+    const availableQty = holding ? holding.qty : 0;
+
+    if (Number(stockQuantity) > availableQty) {
+      alert(`You do not have enough holdings of ${uid} to sell. Available: ${availableQty}`);
+      return;
+    }
+
+    axios.post("http://localhost:3002/newOrder", {
+      name: uid,
+      qty: Number(stockQuantity),
+      price: Number(stockPrice),
+      mode: "SELL",
+    }).then(() => {
+      generalContext.fetchHoldings();
+      generalContext.showSuccessToast(`Sold ${stockQuantity} shares of ${uid} at ₹${stockPrice}`, "Order Placed Successfully");
+    }).catch((err) => {
+      console.error("Error placing sell order:", err);
+      alert(err.response?.data || "Failed to place sell order. Please try again.");
+    });
+
+    generalContext.closeBuyWindow();
   };
 
   const handleCancelClick = () => {
-    GeneralContext.closeBuyWindow();
+    generalContext.closeBuyWindow();
   };
 
   return (
@@ -57,12 +88,15 @@ const BuyActionWindow = ({ uid }) => {
       <div className="buttons">
         <span>Margin required ₹140.65</span>
         <div>
-          <Link className="btn btn-blue" onClick={handleBuyClick}>
+          <button className="btn btn-blue" onClick={handleBuyClick}>
             Buy
-          </Link>
-          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
+          </button>
+          <button className="btn btn-orange" onClick={handleSellClick} style={{ backgroundColor: "#ff5722" }}>
+            Sell
+          </button>
+          <button className="btn btn-grey" onClick={handleCancelClick}>
             Cancel
-          </Link>
+          </button>
         </div>
       </div>
     </div>
