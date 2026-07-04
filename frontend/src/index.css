@@ -31,3 +31,61 @@ code {
     color: #000;
     font-weight: 600;
 }
+
+#supportHero {
+  background-color: rgb(56, 126, 209);
+  color: white;
+  min-height: 70vh;
+}
+
+#supportHero a {
+  color: white;
+}
+
+.track-ticket {
+  font-size: 15px;
+}
+
+.support-heading {
+  font-size: 32px;
+  line-height: 1.4;
+  font-weight: 500;
+  max-width: 600px;
+}
+
+.support-input {
+  width: 100%;
+  max-width: 560px;
+  padding: 18px 20px;
+  border: none;
+  border-radius: 6px;
+  outline: none;
+  font-size: 16px;
+  color: #444;
+}
+
+.support-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  max-width: 600px;
+}
+
+.support-links a {
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+.featured-list {
+  padding-left: 20px;
+}
+
+.featured-list li {
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+.featured-list a {
+  font-size: 15px;
+  text-decoration: underline;
+}
