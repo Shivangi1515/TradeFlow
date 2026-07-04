@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { auth, googleProvider } from '../../firebase';
 import { signInWithPopup } from 'firebase/auth';
 
-function Signup() {
-    const [username, setUsername] = useState('');
+function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -58,23 +57,22 @@ function Signup() {
 
             if (!res.ok) {
                 const errMsg = await res.text();
-                throw new Error(errMsg || "Google Sign-Up failed");
+                throw new Error(errMsg || "Google Sign-In failed");
             }
 
             const data = await res.json();
-
             // Redirect to Dashboard (port 3001) passing token
             window.location.href = `http://localhost:3001/?token=${data.token}`;
         } catch (err) {
-            console.error("Google signup error:", err);
+            console.error("Google login error:", err);
             setError(err.message || "Failed to authenticate with Google");
             setLoading(false);
         }
     };
 
-    const handleSignup = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        if (!username || !email || !password) {
+        if (!email || !password) {
             setError("All fields are required");
             return;
         }
@@ -83,21 +81,20 @@ function Signup() {
         setError('');
 
         try {
-            const res = await fetch("http://localhost:3002/auth/signup", {
+            const res = await fetch("http://localhost:3002/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ username, email, password })
+                body: JSON.stringify({ email, password })
             });
 
             if (!res.ok) {
                 const errMsg = await res.text();
-                throw new Error(errMsg || "Signup failed");
+                throw new Error(errMsg || "Login failed");
             }
 
             const data = await res.json();
-
             // Redirect to Dashboard (port 3001) passing token
             window.location.href = `http://localhost:3001/?token=${data.token}`;
         } catch (err) {
@@ -111,8 +108,8 @@ function Signup() {
             <div className="card p-5 shadow-lg border-0" style={{ width: "100%", maxWidth: "450px", borderRadius: "16px", backgroundColor: "#fff" }}>
                 <div className="text-center mb-4">
                     <img src="media/images/TradeFlow.png" alt="TradeFlow Logo" style={{ width: "160px", marginBottom: "15px" }} />
-                    <h3 className="fw-bold text-dark">Create Account</h3>
-                    <p className="text-muted">Open a TradeFlow account and start investing</p>
+                    <h3 className="fw-bold text-dark">Welcome Back</h3>
+                    <p className="text-muted">Log in to manage your portfolio and trade</p>
                 </div>
 
                 {error && (
@@ -122,25 +119,7 @@ function Signup() {
                     </div>
                 )}
 
-                <form onSubmit={handleSignup}>
-                    <div className="form-group mb-3">
-                        <label className="form-label text-secondary fw-semibold small">Username</label>
-                        <div className="input-group">
-                            <span className="input-group-text bg-light border-end-0" style={{ borderRadius: "8px 0 0 8px" }}>
-                                <i className="fa-solid fa-user text-muted"></i>
-                            </span>
-                            <input
-                                type="text"
-                                className="form-control bg-light border-start-0 py-2"
-                                placeholder="john_doe"
-                                style={{ borderRadius: "0 8px 8px 0", outline: "none", boxShadow: "none" }}
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
-                        </div>
-                    </div>
-
+                <form onSubmit={handleLogin}>
                     <div className="form-group mb-3">
                         <label className="form-label text-secondary fw-semibold small">Email Address</label>
                         <div className="input-group">
@@ -184,9 +163,9 @@ function Signup() {
                         disabled={loading}
                     >
                         {loading ? (
-                            <span><i className="fa-solid fa-circle-notch fa-spin me-2"></i>Creating account...</span>
+                            <span><i className="fa-solid fa-circle-notch fa-spin me-2"></i>Logging in...</span>
                         ) : (
-                            "Sign Up"
+                            "Log In"
                         )}
                     </button>
                 </form>
@@ -212,7 +191,7 @@ function Signup() {
 
                 <div className="text-center mt-2">
                     <p className="text-muted small mb-0">
-                        Already have an account? <Link to="/login" className="text-primary fw-bold text-decoration-none">Log In</Link>
+                        Don't have an account? <Link to="/signup" className="text-primary fw-bold text-decoration-none">Sign Up</Link>
                     </p>
                 </div>
             </div>
@@ -220,4 +199,4 @@ function Signup() {
     );
 }
 
-export default Signup;
+export default Login;
