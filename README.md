@@ -1,4 +1,4 @@
-# <p align="center"><img src="frontend/public/media/images/TradeFlow.png" alt="TradeFlow Logo" width="220" /><br>TradeFlow — Full-Stack Brokerage Portal</p>
+# <p align="center"><img src="frontend/public/media/images/TradeFlow.png" alt="TradeFlow Logo" width="220" /><br>TradeFlow — Simulated Stock Trading & Brokerage Platform</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-19.2-blue?style=for-the-badge&logo=react" alt="React" />
@@ -13,55 +13,65 @@
 
 ## 📖 What is TradeFlow?
 
-TradeFlow is a stock trading and portfolio management application. The project is divided into three separate components:
-1.  **Frontend Landing Page (Port 3000):** The public-facing marketing site with login and signup pages.
-2.  **Trading Dashboard (Port 3001):** The private user application where clients manage holdings, track positions, view orders, and connect integrations.
-3.  **Backend API Server (Port 3002):** The central Node/Express REST API that securely writes to MongoDB, signs session JWTs, and verifies Firebase Google Auth tokens.
+**TradeFlow** is a full-stack **stock trading and portfolio simulation platform** designed to replicate the user experience of modern, premium discount brokerages (such as Zerodha Kite or Upstox). 
+
+It is designed for paper-trading simulation, full-stack architectural study, and demonstration. It allows users to simulate the lifecycle of stock market trading—ranging from searching and monitoring stock prices in a watchlist, executing buy/sell orders, tracking capital allocations, and analyzing real-time portfolio holdings and active positions.
 
 ---
 
-## 🚀 Key Features
+## 💻 Core Application Nodes
 
-*   🔐 **Google Sign-In & Signup:** Instant, one-click authorization using **Firebase Auth** popup integration.
-*   🔒 **Secure Credentials:** Standard password login salted and hashed securely using **bcryptjs**.
-*   ⚙️ **Live Preferences Settings:** Customize display currency, default chart styles, email notifications, and UI themes (Light/Dark mode) saved in **MongoDB**.
-*   🎨 **Interactive Dark Theme:** Functional dark mode styling that affects sidebars, grids, forms, and dialog sheets globally on toggling.
-*   💼 **Ecosystem Partner Showcase:** Interactive directory of third-party platforms (like Smallcase, Sensibull, Streak) with custom category filters and OAuth-simulated SSO authorization modals.
-*   🧪 **Unit Testing:** Full-fledged test suites using **Jest** and **React Testing Library** to verify login flows, settings panels, app connections, and route protectors.
+The ecosystem is divided into three decoupled origin services working in harmony:
 
----
-
-## 🛠️ Tech Stack & Dependencies
-
-*   **Frontend (Landing Page):** React 19, React Router v7, Firebase SDK, Bootstrap 5.
-*   **Frontend (Dashboard):** React 19, Axios, Chart.js, Material-UI Icons, Vanilla CSS variables.
-*   **Backend API Server:** Node.js, Express, Mongoose ODM, jsonwebtoken (JWT), bcryptjs.
-*   **Testing Framework:** Jest, React Testing Library, Jest DOM Assertions.
+1.  **Frontend Marketing Page (Port 3000):** A public-facing web presence with static sections (About, Products, Pricing, Support) and secure authentication forms (Signup, Login, and "Continue with Google").
+2.  **Trading Dashboard Portal (Port 3001):** The core client application. Once logged in, users can search assets, view live price updates, execute mock trades, manage holdings/positions, customize dashboard settings, and link ecosystem partner integrations.
+3.  **Backend REST API Server (Port 3002):** The coordinator service that runs JWT middleware, validates Firebase Google login tokens, updates preferences inside MongoDB, handles order routing, and seeds default trading data for new users.
 
 ---
 
-## 💻 Local Development Setup
+## ✨ Features & Functionality
+
+*   📊 **Interactive Trading Terminal:** Search and monitor stocks in a real-time responsive watchlist. Hover over items to trigger instant Buy/Sell dialog windows.
+*   💼 **Holdings & Positions Management:** Automatically tracks long-term investments (Holdings) and active intraday/delivery trades (Positions) with real-time profit and loss (P&L) calculations.
+*   🛍️ **Order Executions:** Placing a mock trade creates an order entry, updates your capital funds balance, modifies your holdings/positions, and appends logs inside the Orders history page.
+*   🔐 **Firebase Google Sign-In:** One-click OAuth login utilizing Firebase client popups verified securely against Google public keys on the backend.
+*   ⚙️ **MongoDB User Preferences:** Live settings synchronization (UI Theme, Display Currency, default chart types, email notifications) stored inside the MongoDB user document.
+*   🎨 **Premium Dark Theme:** Fully functional Dark Mode that toggles CSS variables globally across the dashboard sidebar, watchlist, cards, forms, and overlays.
+*   🌐 **SSO Apps Ecosystem:** Simulated OAuth2 Single Sign-On (SSO) modal connections for broker integrations (like Smallcase, Sensibull, Streak, GoldenPi, and Tijori).
+
+---
+
+## 🛠️ Tech Stack Details
+
+*   **Frontend (Landing site):** React 19, React Router v7, Firebase Auth Client SDK, Bootstrap 5.
+*   **Frontend (Trading Panel):** React 19, Axios (with request/response interceptors), Chart.js, Material-UI Icons, CSS Variables.
+*   **Backend REST API:** Node.js, Express, Mongoose ODM (MongoDB Atlas connection), jsonwebtoken (JWT), bcryptjs.
+*   **Testing Suites:** Jest, React Testing Library, `@testing-library/jest-dom` extensions.
+
+---
+
+## 🛠️ Local Development Quickstart
 
 > [!IMPORTANT]
-> Make sure you have **Node.js (v16+)** installed and a **MongoDB** connection string ready before running the steps below.
+> Ensure you have **Node.js (v16+)** installed and a **MongoDB** connection string ready before running the steps below.
 
-### Step 1: Run the Backend Server
+### Step 1: Backend Server Setup
 1. Go to the `backend/` directory:
    ```bash
    cd backend
    npm install
    ```
-2. Create a `.env` file in the `backend/` directory and add your keys:
+2. Create a `.env` file in the `backend/` folder:
    ```env
    MONGO_URL=your_mongodb_connection_string
    FIREBASE_API_KEY=your_firebase_api_key
    ```
-3. Start the server:
+3. Start the API server:
    ```bash
    npm start
    ```
 
-### Step 2: Run the Landing Page Website
+### Step 2: Landing Page Setup
 1. Go to the `frontend/` directory:
    ```bash
    cd ../frontend
@@ -70,7 +80,7 @@ TradeFlow is a stock trading and portfolio management application. The project i
    ```bash
    npm install
    ```
-3. Create a `.env` file in the `frontend/` directory and add your credentials:
+3. Create a `.env` file in the `frontend/` folder:
    ```env
    REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
    REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -79,22 +89,19 @@ TradeFlow is a stock trading and portfolio management application. The project i
    REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
    REACT_APP_FIREBASE_APP_ID=your_app_id
    ```
-4. Start the landing page:
+4. Start the landing page server:
    ```bash
    npm start
    ```
 
-### Step 3: Run the Trading Dashboard Portal
+### Step 3: Trading Dashboard Setup
 1. Go to the `dashboard/` directory:
    ```bash
    cd ../dashboard
    ```
-2. Install dependencies:
+2. Install dependencies and start the portal:
    ```bash
    npm install
-   ```
-3. Start the dashboard portal:
-   ```bash
    npm start
    ```
 
