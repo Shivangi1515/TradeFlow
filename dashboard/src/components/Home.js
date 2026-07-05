@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Dashboard from './Dashboard';
 import TopBar from './TopBar';
-import { FRONTEND_URL } from '../config';
+import { API_URL, FRONTEND_URL } from '../config';
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -37,8 +38,31 @@ const Home = () => {
       // Redirect to landing page login route
       window.location.href = `${FRONTEND_URL}/login`;
     } else {
-      setAuthenticated(true);
-      setLoading(false);
+      // Fetch settings to apply theme immediately
+      axios.get(`${API_URL}/user/settings`)
+        .then((res) => {
+          const theme = res.data.theme || "light";
+          localStorage.setItem("theme", theme);
+          if (theme === "dark") {
+            document.body.classList.add("dark-theme");
+          } else {
+            document.body.classList.remove("dark-theme");
+          }
+          setAuthenticated(true);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error loading theme on home mount:", err);
+          // Fallback to local storage theme if offline or error
+          const localTheme = localStorage.getItem("theme") || "light";
+          if (localTheme === "dark") {
+            document.body.classList.add("dark-theme");
+          } else {
+            document.body.classList.remove("dark-theme");
+          }
+          setAuthenticated(true);
+          setLoading(false);
+        });
     }
   }, []);
 

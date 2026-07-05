@@ -1,10 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FRONTEND_URL } from "../config";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
+import axios from "axios";
+import { API_URL, FRONTEND_URL } from "../config";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  useEffect(() => {
+    // Keep local state in sync with DOM body class mutations (like from Settings page)
+    const observer = new MutationObserver(() => {
+      const isDark = document.body.classList.contains("dark-theme");
+      setTheme(isDark ? "dark" : "light");
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+    // Initial check
+    const isDark = document.body.classList.contains("dark-theme");
+    setTheme(isDark ? "dark" : "light");
+
+    return () => observer.disconnect();
+  }, []);
+
+  const toggleTheme = (e) => {
+    e.stopPropagation();
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+
+    if (newTheme === "dark") {
+      document.body.classList.add("dark-theme");
+    } else {
+      document.body.classList.remove("dark-theme");
+    }
+
+    // Call API in the background to update preferences in MongoDB
+    axios.put(`${API_URL}/user/settings`, { theme: newTheme })
+      .catch((err) => console.error("Error syncing theme to DB:", err));
+  };
 
   const username = localStorage.getItem('username') || "User";
   const email = localStorage.getItem('email') || "";
@@ -32,7 +67,7 @@ const Menu = () => {
     <div className="menu-container" style={{ position: "relative" }}>
       <img src="/logo.png" style={{ width: "50px" }} alt="logo" />
       <div className="menus">
-        <ul>
+        <ul style={{ display: "flex", alignItems: "center" }}>
           <li>
             <Link
               style={{ textDecoration: "none" }}
@@ -109,8 +144,30 @@ const Menu = () => {
                 Settings
               </p>
             </Link>
-          </li>
         </ul>
+        <button 
+          onClick={toggleTheme} 
+          style={{ 
+            background: "transparent", 
+            border: "none", 
+            cursor: "pointer", 
+            marginRight: "15px", 
+            marginLeft: "15px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: theme === "dark" ? "#ffc107" : "#555",
+            outline: "none",
+            padding: "8px",
+            borderRadius: "50%",
+            transition: "background 0.2s"
+          }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)"}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+          title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+        >
+          {theme === "light" ? <Brightness4 /> : <Brightness7 style={{ color: "#f59e0b" }} />}
+        </button>
         <hr />
         <div className="profile" onClick={handleProfileClick} style={{ position: "relative" }}>
           <div className="avatar">{initials}</div>
