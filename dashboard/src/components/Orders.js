@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../config";
 
 const Orders = () => {
   const [allOrders, setAllOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchOrders = () => {
     setLoading(true);
@@ -24,11 +26,27 @@ const Orders = () => {
   }, []);
 
   const handleGetStarted = () => {
-    const searchInput = document.getElementById("search");
-    if (searchInput) {
-      searchInput.focus();
-      searchInput.scrollIntoView({ behavior: "smooth" });
-    }
+    // 1. Navigate to the main dashboard home page (Summary)
+    navigate("/");
+    
+    // 2. Wait a moment for page transition, then find, focus, and highlight search box
+    setTimeout(() => {
+      const searchInput = document.getElementById("search");
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.scrollIntoView({ behavior: "smooth" });
+        
+        // Add a temporary blue highlight ring to draw attention to the search box
+        searchInput.style.outline = "2px solid #4184f3";
+        searchInput.style.border = "1px solid #4184f3";
+        
+        // Remove the highlight after 2 seconds
+        setTimeout(() => {
+          searchInput.style.outline = "";
+          searchInput.style.border = "";
+        }, 2000);
+      }
+    }, 150);
   };
 
   if (loading) {
