@@ -41,12 +41,18 @@ const Home = () => {
       // Fetch settings to apply theme immediately
       axios.get(`${API_URL}/user/settings`)
         .then((res) => {
-          const theme = res.data.theme || "light";
-          localStorage.setItem("theme", theme);
-          if (theme === "dark") {
-            document.body.classList.add("dark-theme");
-          } else {
-            document.body.classList.remove("dark-theme");
+          try {
+            if (typeof window !== "undefined" && window.localStorage && document.body) {
+              const theme = res.data.theme || "light";
+              localStorage.setItem("theme", theme);
+              if (theme === "dark") {
+                document.body.classList.add("dark-theme");
+              } else {
+                document.body.classList.remove("dark-theme");
+              }
+            }
+          } catch (e) {
+            console.error("Error setting theme in then block:", e);
           }
           setAuthenticated(true);
           setLoading(false);
@@ -54,11 +60,17 @@ const Home = () => {
         .catch((err) => {
           console.error("Error loading theme on home mount:", err);
           // Fallback to local storage theme if offline or error
-          const localTheme = localStorage.getItem("theme") || "light";
-          if (localTheme === "dark") {
-            document.body.classList.add("dark-theme");
-          } else {
-            document.body.classList.remove("dark-theme");
+          try {
+            if (typeof window !== "undefined" && window.localStorage && document.body) {
+              const localTheme = localStorage.getItem("theme") || "light";
+              if (localTheme === "dark") {
+                document.body.classList.add("dark-theme");
+              } else {
+                document.body.classList.remove("dark-theme");
+              }
+            }
+          } catch (e) {
+            console.error("Error setting theme in catch block:", e);
           }
           setAuthenticated(true);
           setLoading(false);
