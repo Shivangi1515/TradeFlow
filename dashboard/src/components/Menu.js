@@ -144,6 +144,7 @@ const Menu = () => {
                 Settings
               </p>
             </Link>
+          </li>
         </ul>
         <button 
           onClick={toggleTheme} 
