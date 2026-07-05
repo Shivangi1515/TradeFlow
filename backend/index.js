@@ -317,6 +317,80 @@ app.get('/allPositions', authenticateToken, async (req, res) => {
     }
 });
 
+// GET user funds details
+app.get('/user/funds', authenticateToken, async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.user.userId);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        res.json({
+            funds: user.funds !== undefined ? user.funds : 100000.00,
+            usedMargin: user.usedMargin !== undefined ? user.usedMargin : 0.00
+        });
+    } catch (err) {
+        console.error("Error fetching funds:", err);
+        res.status(500).send("Error fetching funds");
+    }
+});
+
+// POST add funds
+app.post('/user/funds/add', authenticateToken, async (req, res) => {
+    try {
+        const { amount } = req.body;
+        const amountNum = Number(amount);
+        if (isNaN(amountNum) || amountNum <= 0) {
+            return res.status(400).send("Invalid amount");
+        }
+        const user = await UserModel.findById(req.user.userId);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        user.funds = (user.funds !== undefined ? user.funds : 100000.00) + amountNum;
+        await user.save();
+        res.json({ message: "Funds added successfully", funds: user.funds });
+    } catch (err) {
+        console.error("Error adding funds:", err);
+        res.status(500).send("Error adding funds");
+    }
+});
+
+// POST withdraw funds
+app.post('/user/funds/withdraw', authenticateToken, async (req, res) => {
+    try {
+        const { amount } = req.body;
+        const amountNum = Number(amount);
+        if (isNaN(amountNum) || amountNum <= 0) {
+            return res.status(400).send("Invalid amount");
+        }
+        const user = await UserModel.findById(req.user.userId);
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        const currentFunds = user.funds !== undefined ? user.funds : 100000.00;
+        if (currentFunds < amountNum) {
+            return res.status(400).send("Insufficient balance for withdrawal");
+        }
+        user.funds = currentFunds - amountNum;
+        await user.save();
+        res.json({ message: "Funds withdrawn successfully", funds: user.funds });
+    } catch (err) {
+        console.error("Error withdrawing funds:", err);
+        res.status(500).send("Error withdrawing funds");
+    }
+});
+
+// GET all orders for the current user
+app.get('/allOrders', authenticateToken, async (req, res) => {
+    try {
+        const allOrders = await OrdersModel.find({ user: req.user.userId }).sort({ date: -1 });
+        res.json(allOrders);
+    } catch (err) {
+        console.error("Error fetching orders:", err);
+        res.status(500).send("Error fetching orders");
+    }
+});
+
 app.post('/newOrder', authenticateToken, async (req, res) => {
     try {
         const { name, qty, price, mode } = req.body;
@@ -324,11 +398,23 @@ app.post('/newOrder', authenticateToken, async (req, res) => {
         const priceNum = Number(price);
         const userId = req.user.userId;
 
+        const userObj = await UserModel.findById(userId);
+        if (!userObj) {
+            return res.status(404).send("User not found");
+        }
+
+        const cost = priceNum * qtyNum;
+        const currentFunds = userObj.funds !== undefined ? userObj.funds : 100000.00;
+
         let holding = await HoldingsModel.findOne({ name, user: userId });
 
         if (mode === "SELL") {
             if (!holding || holding.qty < qtyNum) {
                 return res.status(400).send("Insufficient holdings to sell");
+            }
+        } else if (mode === "BUY") {
+            if (currentFunds < cost) {
+                return res.status(400).send("Insufficient funds to place this order");
             }
         }
 
@@ -343,6 +429,10 @@ app.post('/newOrder', authenticateToken, async (req, res) => {
         await newOrder.save();
 
         if (mode === "BUY") {
+            userObj.funds = currentFunds - cost;
+            userObj.usedMargin = (userObj.usedMargin !== undefined ? userObj.usedMargin : 0.00) + cost;
+            await userObj.save();
+
             if (holding) {
                 const oldQty = holding.qty;
                 const oldAvg = holding.avg;
@@ -366,6 +456,10 @@ app.post('/newOrder', authenticateToken, async (req, res) => {
                 await newHolding.save();
             }
         } else if (mode === "SELL") {
+            userObj.funds = currentFunds + cost;
+            userObj.usedMargin = Math.max(0, (userObj.usedMargin !== undefined ? userObj.usedMargin : 0.00) - cost);
+            await userObj.save();
+
             const newQty = holding.qty - qtyNum;
             if (newQty === 0) {
                 await HoldingsModel.deleteOne({ name, user: userId });

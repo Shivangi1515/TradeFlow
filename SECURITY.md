@@ -1,25 +1,30 @@
 # Security Policy
 
+This document outlines the security policies, supported versions, and vulnerability reporting procedures for the TradeFlow ecosystem.
+
+---
+
 ## Supported Versions
 
-Only the latest release version on the `main` branch is supported for security updates.
+Security updates are actively applied to the latest release on the primary branch:
 
 | Version | Supported |
 | :--- | :--- |
-| Latest release |  Yes |
-| Legacy releases |  No |
+| Latest Release (`main`) |  Yes |
+| Legacy Releases |  No |
 
 ---
 
 ## Reporting a Vulnerability
 
-We take the security of TradeFlow seriously. If you identify a security vulnerability (such as SQL injection, Cross-Site Scripting, token leaks, or cryptography issues), please report it to us safely:
+If you discover a security vulnerability, please do **not** disclose it publicly or file a public GitHub issue. Instead, report it using one of the following secure channels:
 
-1.  **Do not create a public GitHub Issue** for security vulnerabilities.
-2.  Send a detailed vulnerability report via email to **security@tradeflow.com** (or contact the project administrator).
-3.  Include in your report:
-    *   A description of the vulnerability and its potential impact.
-    *   Detailed step-by-step reproduction instructions or a Proof of Concept (PoC) script.
-    *   Any proposed remediation steps.
+1. **Private Vulnerability Reporting**: Use the GitHub "Report a vulnerability" button under the **Security** tab of the repository to submit a report privately.
+2. **Direct Contact**: Reach out privately to the repository administrator or project maintainers.
 
-We will acknowledge receipt of your report within 48 hours and work with you to resolve the vulnerability before disclosure.
+### Please include the following in your report:
+* A detailed description of the vulnerability and its potential impact.
+* Step-by-step reproduction instructions or a Proof of Concept (PoC).
+* Any recommended patches or fixes.
+
+We will review your submission and work to resolve the issue as quickly as possible.
