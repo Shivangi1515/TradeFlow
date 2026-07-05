@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 
 import axios from "axios";
+import { API_URL } from "../config";
 
 import GeneralContext from "./GeneralContext";
 
@@ -12,7 +13,7 @@ const BuyActionWindow = ({ uid }) => {
   const generalContext = useContext(GeneralContext);
 
   const handleBuyClick = () => {
-    axios.post("http://localhost:3002/newOrder", {
+    axios.post(`${API_URL}/newOrder`, {
       name: uid,
       qty: Number(stockQuantity),
       price: Number(stockPrice),
@@ -37,7 +38,7 @@ const BuyActionWindow = ({ uid }) => {
       return;
     }
 
-    axios.post("http://localhost:3002/newOrder", {
+    axios.post(`${API_URL}/newOrder`, {
       name: uid,
       qty: Number(stockQuantity),
       price: Number(stockPrice),

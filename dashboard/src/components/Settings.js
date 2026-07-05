@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 const Settings = () => {
   const [theme, setTheme] = useState("light");
@@ -17,7 +18,7 @@ const Settings = () => {
   useEffect(() => {
     // Fetch settings from the backend
     axios
-      .get("http://localhost:3002/user/settings")
+      .get(`${API_URL}/user/settings`)
       .then((res) => {
         setTheme(res.data.theme || "light");
         setCurrency(res.data.currency || "INR");
@@ -44,7 +45,7 @@ const Settings = () => {
     setSuccessMsg("");
 
     axios
-      .put("http://localhost:3002/user/settings", {
+      .put(`${API_URL}/user/settings`, {
         theme,
         currency,
         chartType,

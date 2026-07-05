@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 import BuyActionWindow from "./BuyActionWindow";
 import Toast from "./Toast";
@@ -19,7 +20,7 @@ export const GeneralContextProvider = (props) => {
   const [toast, setToast] = useState({ show: false, message: "", title: "" });
 
   const fetchHoldings = () => {
-    axios.get("http://localhost:3002/allHoldings").then((res) => {
+    axios.get(`${API_URL}/allHoldings`).then((res) => {
       setAllHoldings(res.data);
     });
   };

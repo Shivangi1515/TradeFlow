@@ -4,6 +4,7 @@ import {BrowserRouter, Routes, Route} from "react-router-dom";
 import axios from 'axios';
 import './index.css';
 import Home from "./components/Home";
+import { FRONTEND_URL } from './config';
 
 // Configure global axios request interceptor to inject token
 axios.interceptors.request.use(
@@ -27,7 +28,7 @@ axios.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('username');
       localStorage.removeItem('email');
-      window.location.href = "http://localhost:3000/login";
+      window.location.href = `${FRONTEND_URL}/login`;
     }
     return Promise.reject(error);
   }

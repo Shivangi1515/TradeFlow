@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { auth, googleProvider } from '../../firebase';
 import { signInWithPopup } from 'firebase/auth';
+import { API_URL, DASHBOARD_URL } from '../../config';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ function Login() {
         if (!isFirebaseConfigured) {
             console.warn("Firebase credentials not configured. Using Mock Google login for development.");
             try {
-                const res = await fetch("http://localhost:3002/auth/google", {
+                const res = await fetch(`${API_URL}/auth/google`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -34,8 +35,8 @@ function Login() {
                 }
 
                 const data = await res.json();
-                // Redirect to Dashboard (port 3001) passing token
-                window.location.href = `http://localhost:3001/?token=${data.token}`;
+                // Redirect to Dashboard passing token
+                window.location.href = `${DASHBOARD_URL}/?token=${data.token}`;
             } catch (err) {
                 setError(err.message || "Mock Google Login failed");
                 setLoading(false);
@@ -47,7 +48,7 @@ function Login() {
             const result = await signInWithPopup(auth, googleProvider);
             const idToken = await result.user.getIdToken();
             
-            const res = await fetch("http://localhost:3002/auth/google", {
+            const res = await fetch(`${API_URL}/auth/google`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -61,8 +62,8 @@ function Login() {
             }
 
             const data = await res.json();
-            // Redirect to Dashboard (port 3001) passing token
-            window.location.href = `http://localhost:3001/?token=${data.token}`;
+            // Redirect to Dashboard passing token
+            window.location.href = `${DASHBOARD_URL}/?token=${data.token}`;
         } catch (err) {
             console.error("Google login error:", err);
             setError(err.message || "Failed to authenticate with Google");
@@ -81,7 +82,7 @@ function Login() {
         setError('');
 
         try {
-            const res = await fetch("http://localhost:3002/auth/login", {
+            const res = await fetch(`${API_URL}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -95,8 +96,8 @@ function Login() {
             }
 
             const data = await res.json();
-            // Redirect to Dashboard (port 3001) passing token
-            window.location.href = `http://localhost:3001/?token=${data.token}`;
+            // Redirect to Dashboard passing token
+            window.location.href = `${DASHBOARD_URL}/?token=${data.token}`;
         } catch (err) {
             setError(err.message);
             setLoading(false);

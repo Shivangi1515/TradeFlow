@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { FRONTEND_URL } from "../config";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
@@ -21,7 +22,7 @@ const Menu = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('email');
-    window.location.href = "http://localhost:3000";
+    window.location.href = FRONTEND_URL;
   };
 
   const menuClass = "menu";

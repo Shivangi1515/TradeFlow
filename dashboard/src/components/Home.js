@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Dashboard from './Dashboard';
 import TopBar from './TopBar';
+import { FRONTEND_URL } from '../config';
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const Home = () => {
     const savedToken = localStorage.getItem('token');
     if (!savedToken) {
       // Redirect to landing page login route
-      window.location.href = "http://localhost:3000/login";
+      window.location.href = `${FRONTEND_URL}/login`;
     } else {
       setAuthenticated(true);
       setLoading(false);
