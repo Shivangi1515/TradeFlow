@@ -88,12 +88,12 @@ jobs:
         context: ./frontend
         push: true
         build-args: |
-          REACT_APP_FIREBASE_API_KEY=AIzaSyCVFoms1s1LEMcWA5jMlfFf9fWZ-7c4o2U
-          REACT_APP_FIREBASE_AUTH_DOMAIN=tradeflow-eafd5.firebaseapp.com
-          REACT_APP_FIREBASE_PROJECT_ID=tradeflow-eafd5
-          REACT_APP_FIREBASE_STORAGE_BUCKET=tradeflow-eafd5.firebasestorage.app
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID=599516524392
-          REACT_APP_FIREBASE_APP_ID=1:599516524392:web:8817d10a77e6edde9d30dd
+          REACT_APP_FIREBASE_API_KEY=${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN=${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID=${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET=${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APP_ID=${{ secrets.REACT_APP_FIREBASE_APP_ID }}
         tags: |
           ghcr.io/${{ env.REPO_LOWER }}/frontend:latest
           ghcr.io/${{ env.REPO_LOWER }}/frontend:${{ github.sha }}
