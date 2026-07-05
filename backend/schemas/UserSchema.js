@@ -11,6 +11,10 @@ const UserSchema = new Schema({
   notifications: { type: Boolean, default: true },
   funds: { type: Number, default: 100000.00 },
   usedMargin: { type: Number, default: 0.00 },
+  isEmailVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
 

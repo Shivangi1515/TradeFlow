@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require("express");
+const crypto = require("crypto");
 
 const mongoose = require("mongoose");
 
@@ -12,6 +13,29 @@ const { OrdersModel } = require("./model/OrdersModel");
 const { UserModel } = require("./model/UserModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+
+// Rate Limiter for authentication routes to prevent brute-force
+const authAttempts = new Map();
+const rateLimitAuth = (req, res, next) => {
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const now = Date.now();
+    const limit = 5; // Max 5 attempts
+    const windowMs = 15 * 60 * 1000; // 15 minutes window
+
+    if (!authAttempts.has(ip)) {
+        authAttempts.set(ip, []);
+    }
+
+    // Filter attempts within the time window
+    const attempts = authAttempts.get(ip).filter(timestamp => now - timestamp < windowMs);
+    attempts.push(now);
+    authAttempts.set(ip, attempts);
+
+    if (attempts.length > limit) {
+        return res.status(429).send("Too many attempts. Please try again after 15 minutes.");
+    }
+    next();
+};
 
 const PORT = process.env.PORT || 3002;
 const uri = process.env.MONGO_URL;
@@ -74,7 +98,7 @@ const authenticateToken = (req, res, next) => {
 // --- AUTHENTICATION ROUTES ---
 
 // 1. Signup Route
-app.post('/auth/signup', async (req, res) => {
+app.post('/auth/signup', rateLimitAuth, async (req, res) => {
     try {
         const { username, email, password } = req.body;
         if (!username || !email || !password) {
@@ -87,25 +111,28 @@ app.post('/auth/signup', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+
         const newUser = new UserModel({
             username,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            isEmailVerified: false,
+            emailVerificationToken
         });
 
         await newUser.save();
         await seedUserData(newUser._id);
 
-        const token = jwt.sign(
-            { userId: newUser._id, email: newUser.email, username: newUser.username },
-            JWT_SECRET,
-            { expiresIn: '7d' }
-        );
+        // In a real application, you would email this verificationToken to the user
+        console.log(`\n--- SIMULATED VERIFICATION EMAIL ---`);
+        console.log(`To: ${email}`);
+        console.log(`Verify Link: http://localhost:3002/auth/verify-email?token=${emailVerificationToken}`);
+        console.log(`------------------------------------\n`);
 
         res.status(201).json({
-            token,
-            username: newUser.username,
-            email: newUser.email
+            message: "Registration successful! Please verify your email.",
+            verificationToken: emailVerificationToken // Returned for simulation/testing
         });
     } catch (err) {
         console.error("Signup error:", err);
@@ -114,7 +141,7 @@ app.post('/auth/signup', async (req, res) => {
 });
 
 // 2. Login Route
-app.post('/auth/login', async (req, res) => {
+app.post('/auth/login', rateLimitAuth, async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -131,10 +158,15 @@ app.post('/auth/login', async (req, res) => {
             return res.status(401).send("Invalid email or password");
         }
 
+        // Enforce email verification
+        if (!user.isEmailVerified) {
+            return res.status(403).send("Email not verified. Please check your inbox.");
+        }
+
         const token = jwt.sign(
             { userId: user._id, email: user.email, username: user.username },
             JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '24h' } // Shorter session lifetime
         );
 
         res.json({
@@ -145,6 +177,95 @@ app.post('/auth/login', async (req, res) => {
     } catch (err) {
         console.error("Login error:", err);
         res.status(500).send("Error logging in user");
+    }
+});
+
+// 3. Verify Email Route
+app.get('/auth/verify-email', async (req, res) => {
+    try {
+        const { token } = req.query;
+        if (!token) {
+            return res.status(400).send("Verification token is required");
+        }
+
+        const user = await UserModel.findOne({ emailVerificationToken: token });
+        if (!user) {
+            return res.status(400).send("Invalid or expired verification token");
+        }
+
+        user.isEmailVerified = true;
+        user.emailVerificationToken = undefined;
+        await user.save();
+
+        res.send("Email verified successfully! You can now log in.");
+    } catch (err) {
+        console.error("Email verification error:", err);
+        res.status(500).send("Error verifying email");
+    }
+});
+
+// 4. Forgot Password Route
+app.post('/auth/forgot-password', rateLimitAuth, async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).send("Email is required");
+        }
+
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            // Mitigate user enumeration by returning a generic message
+            return res.json({ message: "If that email exists, a reset link has been generated." });
+        }
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiration
+        await user.save();
+
+        // Simulate sending email
+        console.log(`\n--- SIMULATED PASSWORD RESET EMAIL ---`);
+        console.log(`To: ${email}`);
+        console.log(`Reset Link: http://localhost:3000/reset-password?token=${resetToken}`);
+        console.log(`--------------------------------------\n`);
+
+        res.json({
+            message: "Password reset link has been generated successfully.",
+            resetToken: resetToken // Returned for simulation/testing
+        });
+    } catch (err) {
+        console.error("Forgot password error:", err);
+        res.status(500).send("Error generating reset token");
+    }
+});
+
+// 5. Reset Password Route
+app.post('/auth/reset-password', rateLimitAuth, async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            return res.status(400).send("Token and password are required");
+        }
+
+        const user = await UserModel.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).send("Invalid or expired password reset token");
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        res.send("Password has been reset successfully! You can now log in.");
+    } catch (err) {
+        console.error("Reset password error:", err);
+        res.status(500).send("Error resetting password");
     }
 });
 
@@ -192,6 +313,10 @@ app.post('/auth/google', async (req, res) => {
                 sub: firebaseUser.localId
             };
         } else {
+            // Enforce signature verification in production
+            if (process.env.NODE_ENV === "production") {
+                return res.status(401).send("OAuth signature verification is required in production");
+            }
             // Development fallback: decode JWT without signature validation
             console.warn("WARNING: FIREBASE_API_KEY not set. Decoding token without signature verification.");
             const decoded = jwt.decode(credential);
@@ -214,24 +339,34 @@ app.post('/auth/google', async (req, res) => {
         let user = await UserModel.findOne({ email });
 
         if (!user) {
-            // First time Google user - Register them!
+            // First time Google user - Register them as verified!
             user = new UserModel({
                 username: name || email.split('@')[0],
                 email,
-                googleId
+                googleId,
+                isEmailVerified: true
             });
             await user.save();
             await seedUserData(user._id);
-        } else if (!user.googleId) {
-            // User existed but hadn't linked Google account - Link it!
-            user.googleId = googleId;
-            await user.save();
+        } else {
+            let updated = false;
+            if (!user.googleId) {
+                user.googleId = googleId;
+                updated = true;
+            }
+            if (!user.isEmailVerified) {
+                user.isEmailVerified = true;
+                updated = true;
+            }
+            if (updated) {
+                await user.save();
+            }
         }
 
         const token = jwt.sign(
             { userId: user._id, email: user.email, username: user.username },
             JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '24h' }
         );
 
         res.json({
