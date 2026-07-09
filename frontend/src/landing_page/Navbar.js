@@ -1,21 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function Navbar() {
-    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-
     useEffect(() => {
-        document.documentElement.setAttribute('data-bs-theme', theme);
-    }, [theme]);
-
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-    };
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+    }, []);
 
     return (
-        <nav className="navbar navbar-expand-lg border-bottom" style={{ backgroundColor: theme === 'dark' ? '#1a1a1a' : '#FFF', transition: 'background-color 0.3s' }}>
+        <nav className="navbar navbar-expand-lg border-bottom" style={{ backgroundColor: '#FFF', transition: 'background-color 0.3s' }}>
             <div className="container p-2">
                 <Link className="navbar-brand" to="/">
                     <img 
@@ -23,7 +15,7 @@ function Navbar() {
                         alt="Logo" 
                         style={{ 
                             width: '35%', 
-                            filter: theme === 'dark' ? 'brightness(0.9) contrast(1.1)' : 'none' 
+                            filter: 'none' 
                         }} 
                     />
                 </Link>
@@ -50,28 +42,6 @@ function Navbar() {
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link active" to="/support">Support</Link>
-                            </li>
-                            <li className="nav-item">
-                                <button 
-                                    type="button"
-                                    onClick={toggleTheme} 
-                                    className="nav-link btn" 
-                                    style={{ 
-                                        border: "none", 
-                                        background: "transparent", 
-                                        color: theme === 'dark' ? '#ffc107' : '#555',
-                                        fontSize: '1.2rem',
-                                        cursor: 'pointer',
-                                        padding: '0px 10px',
-                                        marginLeft: '30px',
-                                        outline: 'none',
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}
-                                    title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-                                >
-                                    {theme === 'light' ? <i className="fa-solid fa-moon"></i> : <i className="fa-solid fa-sun" style={{ color: "#ffc107" }}></i>}
-                                </button>
                             </li>
                         </ul>
                     </form>

@@ -105,6 +105,11 @@ app.post('/auth/signup', rateLimitAuth, async (req, res) => {
             return res.status(400).send("Please fill in all fields");
         }
 
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+        if (!specialCharRegex.test(password)) {
+            return res.status(400).send("Password must contain at least one special character");
+        }
+
         const existingUser = await UserModel.findOne({ email });
         if (existingUser) {
             return res.status(400).send("Email is already registered");

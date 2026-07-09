@@ -75,7 +75,7 @@ describe('Login Component Unit Tests', () => {
     const submitBtn = screen.getByRole('button', { name: 'Log In' });
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123!' } });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
@@ -97,7 +97,7 @@ describe('Login Component Unit Tests', () => {
     const submitBtn = screen.getByRole('button', { name: 'Log In' });
 
     fireEvent.change(emailInput, { target: { value: 'wrong@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'wrongpass' } });
+    fireEvent.change(passwordInput, { target: { value: 'wrongpass!' } });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {

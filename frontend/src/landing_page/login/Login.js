@@ -7,6 +7,7 @@ import { API_URL, DASHBOARD_URL } from '../../config';
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -78,6 +79,12 @@ function Login() {
             return;
         }
 
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+        if (!specialCharRegex.test(password)) {
+            setError("Password must contain at least one special character.");
+            return;
+        }
+
         setLoading(true);
         setError('');
 
@@ -146,14 +153,28 @@ function Login() {
                                 <i className="fa-solid fa-lock text-muted"></i>
                             </span>
                             <input
-                                type="password"
-                                className="form-control bg-light border-start-0 py-2"
+                                type={showPassword ? "text" : "password"}
+                                className="form-control bg-light border-start-0 border-end-0 py-2"
                                 placeholder="••••••••"
-                                style={{ borderRadius: "0 8px 8px 0", outline: "none", boxShadow: "none" }}
+                                style={{ outline: "none", boxShadow: "none" }}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
+                            <button
+                                type="button"
+                                className="input-group-text bg-light border-start-0 btn-toggle-password"
+                                style={{ 
+                                    borderRadius: "0 8px 8px 0", 
+                                    cursor: 'pointer', 
+                                    border: '1px solid #ced4da',
+                                    borderLeft: 'none'
+                                }}
+                                onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-muted`}></i>
+                            </button>
                         </div>
                     </div>
 

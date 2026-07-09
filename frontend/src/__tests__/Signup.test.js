@@ -68,7 +68,7 @@ describe('Signup Component Unit Tests', () => {
 
     fireEvent.change(userInput, { target: { value: 'newuser' } });
     fireEvent.change(emailInput, { target: { value: 'new@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'pass12345' } });
+    fireEvent.change(passwordInput, { target: { value: 'pass12345!' } });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
@@ -92,7 +92,7 @@ describe('Signup Component Unit Tests', () => {
 
     fireEvent.change(userInput, { target: { value: 'existinguser' } });
     fireEvent.change(emailInput, { target: { value: 'existing@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'pass12345' } });
+    fireEvent.change(passwordInput, { target: { value: 'pass12345!' } });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
